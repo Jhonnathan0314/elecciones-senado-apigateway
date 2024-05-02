@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: elecciones-senado-apigateway
+
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedHeaders: '*'
+            allowedOrigins: ${ALLOWED_CORS_ORIGINS}
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+      routes:
+        - id: security-route
+          uri: ${MS_SECURITY_URI}
+          predicates:
+          - Method=GET,POST,PUT,DELETE
+          - Path=${MS_SECURITY_PATH}
+          metadata:
+            response-timeout: 10000
+            connect-timeout: 10000
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 3
+                redis-rate-limiter.burstCapacity: 2
+                redis-rate-limiter.requestedTokens: 1
+            - name: RequestSize
+              args:
+                maxSize: 5000000
+
+        - id: results-route
+          uri: ${MS_RESULTS_URI}}
+          predicates:
+            - Method=GET,POST,PUT,DELETE
+            - Path=${MS_RESULTS_PATH}
+          metadata:
+            response-timeout: 10000
+            connect-timeout: 10000
+          filters:
+            - name: AuthenticationFilter
+              args:
+                validationUrl: ${MS_SECURITY_URI}${MS_SECURITY_VALIDATE_PATH}
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 3
+                redis-rate-limiter.burstCapacity: 2
+                redis-rate-limiter.requestedTokens: 1
+            - name: RequestSize
+              args:
+                maxSize: 5000000
+
+#            - name: CircuitBreaker
+#              args:
+#                name: myCircuitBreaker
+#                fallbackUri: forward:/inCaseOfFailureUseThis
+#            - RewritePath=/consumingServiceEndpoint, /backingServiceEndpoint
+
+#            - name: Retry
+#              args:
+#                retries: 3
+#                statuses: BAD_GATEWAY
+#                methods: GET,POST
+#                backoff:
+#                  firstBackoff: 10ms
+#                  maxBackoff: 50ms
+#                  factor: 2
+#                  basedOnPreviousValue: false
+
+#              - Retry=3,INTERNAL_SERVER_ERROR,GET,10ms,50ms,2,false
+
+server:
+  port: 8070
