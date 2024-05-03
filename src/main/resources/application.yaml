@@ -7,7 +7,6 @@ spring:
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
       globalcors:
-        add-to-simple-url-handler-mapping: true
         cors-configurations:
           '[/**]':
             allowed-origins: ${ALLOWED_CORS_ORIGINS}
@@ -18,7 +17,6 @@ spring:
               - POST
               - GET
               - PUT
-              - PATCH
               - DELETE
               - OPTIONS
       routes:
