@@ -1,1 +1,1 @@
-MS_SECURITY_URI=http://localhost:8081/;MS_SECURITY_PATH=/api/security/**;MS_RESULTS_URI=http://localhost:8082/;MS_RESULTS_PATH=/api/results/**;ALLOWED_CORS_ORIGINS=http://localhost:4200,http://localhost:4200;MS_SECURITY_VALIDATE_PATH=/api/security/test;SECRET_HEADER=From-Official-Page;
+MS_SECURITY_URI=http://localhost:8081/;MS_SECURITY_PATH=/api/security/**;MS_RESULTS_URI=http://localhost:8082/;MS_RESULTS_PATH=/api/results/**;ALLOWED_CORS_ORIGINS=http://localhost:4200,http://127.0.0.1:4200;MS_SECURITY_VALIDATE_PATH=/api/security/test;SECRET_HEADER=From-Official-Page;

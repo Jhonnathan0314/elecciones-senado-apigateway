@@ -4,21 +4,28 @@ spring:
 
   cloud:
     gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
       globalcors:
+        add-to-simple-url-handler-mapping: true
         cors-configurations:
           '[/**]':
-            allowedHeaders: '*'
-            allowedOrigins: ${ALLOWED_CORS_ORIGINS}
+            allowed-origins: ${ALLOWED_CORS_ORIGINS}
+            allow-credentials: true
+            allowed-headers: "*"
+            exposed-headers: "*"
             allowedMethods:
-              - GET
               - POST
+              - GET
               - PUT
+              - PATCH
               - DELETE
+              - OPTIONS
       routes:
         - id: security-route
           uri: ${MS_SECURITY_URI}
           predicates:
-          - Method=GET,POST,PUT,DELETE
+          - Method=GET,POST,PUT,DELETE,OPTIONS
           - Path=${MS_SECURITY_PATH}
           metadata:
             response-timeout: 10000
@@ -26,17 +33,17 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 3
-                redis-rate-limiter.burstCapacity: 2
+                redis-rate-limiter.replenishRate: 50
+                redis-rate-limiter.burstCapacity: 20
                 redis-rate-limiter.requestedTokens: 1
             - name: RequestSize
               args:
                 maxSize: 5000000
 
         - id: results-route
-          uri: ${MS_RESULTS_URI}}
+          uri: ${MS_RESULTS_URI}
           predicates:
-            - Method=GET,POST,PUT,DELETE
+            - Method=GET,POST,PUT,DELETE,OPTIONS
             - Path=${MS_RESULTS_PATH}
           metadata:
             response-timeout: 10000
@@ -47,8 +54,8 @@ spring:
                 validationUrl: ${MS_SECURITY_URI}${MS_SECURITY_VALIDATE_PATH}
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 3
-                redis-rate-limiter.burstCapacity: 2
+                redis-rate-limiter.replenishRate: 50
+                redis-rate-limiter.burstCapacity: 20
                 redis-rate-limiter.requestedTokens: 1
             - name: RequestSize
               args:
